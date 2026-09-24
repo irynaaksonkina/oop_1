@@ -1,9 +1,13 @@
 #include <iostream>
 #include <string>
+#include <memory>
 #include "Board.h"
+#include "Rectangle.h"
 
 int main() {
 	Board board(80, 25);
+
+	board.addShape(std::make_unique<Rectangle>(1, 5, 3, 'r', false, 10, 5)); //тимчасово для перевірки
 
 	std::string command;
 	while (true) {
