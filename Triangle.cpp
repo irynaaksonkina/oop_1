@@ -1,5 +1,6 @@
 #include "Triangle.h"
 #include <cmath>
+#include <fstream>
 
 Triangle::Triangle(int id, int x, int y, char color, bool filled, int height, int angle)
 	: Shape(id, x, y, color, filled), height(height), angle(angle) {
@@ -81,3 +82,22 @@ std::string Triangle::getParamsString() const {
 	return std::to_string(height) + " " + std::to_string(angle);
 }
 
+void Triangle::saveToFile(std::ofstream& file) const {
+	file << "triangle " << (filled ? "fill" : "frame") << " "
+		<< color << " " << x << " " << y << " "
+		<< height << " " << angle << "\n"; 
+}
+
+
+bool Triangle::edit(const std::vector<std::string>& args) {
+	if (args.size() != 2) return false;
+
+	int newH = std::stoi(args[0]);
+	int newAngle = std::stoi(args[1]);
+
+	if (newH <= 0 || newAngle <= 0 || newAngle >= 90) return false;
+
+	height = newH;
+	angle = newAngle;
+	return true;
+}

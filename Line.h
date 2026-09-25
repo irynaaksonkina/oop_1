@@ -14,4 +14,6 @@ public:
 	bool fitsInBoard(int boardWidth, int boardHeight) const override;
 	std::string getType() const override;
 	std::string getParamsString() const override;
+	void saveToFile(std::ofstream& file) const override;
+	bool edit(const std::vector<std::string>& args) override;
 };

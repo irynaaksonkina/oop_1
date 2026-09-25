@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <string>
+#include <fstream>
 
 class Shape {
 protected:
@@ -19,6 +20,7 @@ public:
 	virtual bool fitsInBoard(int boardWidth, int boardHeight) const = 0;
 	virtual std::string getType() const = 0;
 	virtual std::string getParamsString() const = 0;
+	virtual void saveToFile(std::ofstream& file) const = 0;
 
 
 	int getId() const;
@@ -29,5 +31,7 @@ public:
 
 	void paint(char newColor);
 	void moveTo(int newX, int newY);
+
+	virtual bool edit(const std::vector<std::string>& args) = 0;
 
 }; 

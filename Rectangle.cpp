@@ -1,4 +1,5 @@
 #include "Rectangle.h"
+#include <fstream>
 
 Rectangle::Rectangle(int id, int x, int y, char color, bool filled, int width, int height) 
 	: Shape(id, x, y, color, filled), width(width), height(height) {
@@ -56,4 +57,17 @@ std::string Rectangle::getType() const {
 
 std::string Rectangle::getParamsString() const {
 	return std::to_string(width) + " " + std::to_string(height);
+}
+
+void Rectangle::saveToFile(std::ofstream& file) const {
+	file << "rectangle " << (filled ? "fill" : "frame") << " "
+		<< color << " " << x << " " << y << " "
+		<< width << " " << height << "\n";
+}
+
+bool Rectangle::edit(const std::vector<std::string>& args) {
+	if (args.size() != 2) return false;
+	width = std::stoi(args[0]);
+	height = std::stoi(args[1]);
+	return true;
 }

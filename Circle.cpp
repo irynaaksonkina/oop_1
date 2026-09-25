@@ -1,5 +1,6 @@
 #include "Circle.h"
 #include <cmath>
+#include <fstream>
 
 Circle::Circle(int id, int x, int y, char color, bool filled, int radius)
 	: Shape(id, x, y, color, filled), radius(radius) {
@@ -63,4 +64,19 @@ std::string Circle::getType() const {
 
 std::string Circle::getParamsString() const {
 	return std::to_string(radius);
+}
+
+void Circle::saveToFile(std::ofstream& file) const {
+	file << "circle " << (filled ? "fill" : "frame") << " "
+		<< color << " " << x << " " << y << " "
+		<< radius << "\n";
+}
+
+bool Circle::edit(const std::vector<std::string>& args) {
+	if (args.size() != 1) return false;
+	int newR = std::stoi(args[0]);
+	if (newR <= 0) return false;
+
+	radius = newR;
+	return true;
 }

@@ -30,4 +30,10 @@ public:
 	bool removeSelected();
 
 	bool moveSelected(int newX, int newY);
+
+	void clear();
+	bool save(const std::string& filename) const;
+	bool load(const std::string& filename);
+	
+	bool editSelected(const std::vector<std::string>& args);
 };

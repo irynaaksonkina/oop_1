@@ -1,5 +1,6 @@
 #include "Line.h"
 #include <cmath>
+#include <fstream>
 
 Line::Line(int id, int x, int y, char color, bool filled, int length, char direction)
 	: Shape(id, x, y, color, filled), length(length), direction(direction) {
@@ -60,4 +61,25 @@ std::string Line::getType() const {
 
 std::string Line::getParamsString() const {
 	return std::to_string(length) + " " + std::string(1, direction);
+}
+
+void Line::saveToFile(std::ofstream& file) const {
+	file << "line " << (filled ? "fill" : "frame") << " "
+		<< color << " " << x << " " << y << " "
+		<< length << " " << direction << "\n";
+}
+
+bool Line::edit(const std::vector<std::string>& args) {
+	if (args.size() != 2) return false;
+
+	int newLen = std::stoi(args[0]);
+	char newDir = args[1][0];
+
+	if (newLen <= 0 || (newDir != 'h' && newDir != 'v')) {
+		return false;
+	}
+
+	length = newLen;
+	direction = newDir;
+	return true;
 }
