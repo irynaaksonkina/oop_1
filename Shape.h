@@ -18,6 +18,8 @@ public:
 	virtual bool containsPoint(int px, int py) const = 0;
 	virtual bool fitsInBoard(int boardWidth, int boardHeight) const = 0;
 	virtual std::string getType() const = 0;
+	virtual std::string getParamsString() const = 0;
+
 
 	int getId() const;
 	int getX() const;

@@ -11,7 +11,7 @@ void Circle::draw(std::vector<std::string>& grid) const {
 	if (boardHeight == 0) {
 		return;
 	}
-	int boardWeight = static_cast<int>(grid[0].size());
+	int boardWidth = static_cast<int>(grid[0].size());
 
 	for (int row = y - radius; row <= y + radius; row++) {
 		for (int col = x - radius; col <= x + radius; col++) {
@@ -29,7 +29,7 @@ void Circle::draw(std::vector<std::string>& grid) const {
 				continue;
 			}
 
-			if (col < 0 || col >= boardWeight || row < 0 || row >= boardHeight) {
+			if (col < 0 || col >= boardWidth || row < 0 || row >= boardHeight) {
 				continue;
 			}
 
@@ -59,4 +59,8 @@ bool Circle::fitsInBoard(int boardWidth, int boardHeight) const {
 
 std::string Circle::getType() const {
 	return "circle";
+}
+
+std::string Circle::getParamsString() const {
+	return std::to_string(radius);
 }

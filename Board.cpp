@@ -23,3 +23,7 @@ void Board::draw() const {
 void Board::addShape(std::unique_ptr<Shape> shape) {
     shapes.push_back(std::move(shape));
 }
+
+const std::vector<std::unique_ptr<Shape>>& Board::getShapes() const {
+    return shapes;
+}

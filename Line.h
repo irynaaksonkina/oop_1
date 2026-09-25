@@ -2,13 +2,12 @@
 
 #include "Shape.h"
 
-class Rectangle : public Shape {
+class Line : public Shape {
 private:
-	int width;
-	int height;
-
+	int length;
+	char direction;
 public:
-	Rectangle(int id, int x, int y, char color, bool filled, int width, int height);
+	Line(int id, int x, int y, char color, bool filled, int length, char direction);
 
 	void draw(std::vector<std::string>& grid) const override;
 	bool containsPoint(int px, int py) const override;

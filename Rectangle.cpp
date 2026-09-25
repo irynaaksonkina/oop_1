@@ -53,3 +53,7 @@ bool Rectangle::fitsInBoard(int boardWidth, int boardHeight) const {
 std::string Rectangle::getType() const {
 	return "rectangle";
 }
+
+std::string Rectangle::getParamsString() const {
+	return std::to_string(width) + " " + std::to_string(height);
+}

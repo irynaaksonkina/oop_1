@@ -12,4 +12,5 @@ public:
 	bool containsPoint(int px, int py) const override;
 	bool fitsInBoard(int boardWidth, int boardHeight) const override;
 	std::string getType() const override;
+	std::string getParamsString() const override;
 };
