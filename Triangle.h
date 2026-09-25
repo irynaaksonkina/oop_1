@@ -5,9 +5,10 @@
 class Triangle : public Shape {
 private:
 	int height;
+	int angle;
 
 public:
-	Triangle(int id, int x, int y, char color, bool filled, int height);
+	Triangle(int id, int x, int y, char color, bool filled, int height, int angle);
 
 	void draw(std::vector<std::string>& grid) const override;
 	bool containsPoint(int px, int py) const override;

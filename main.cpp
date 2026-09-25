@@ -64,13 +64,14 @@ void handleAdd(Board& board, const std::vector<std::string>& args, int& nextId) 
             nextId++;
         }
         else if (type == "triangle") {
-            if (args.size() != 4) {
-                std::cout << "error: triangle needs height\n";
+            if (args.size() != 5) {
+                std::cout << "error: triangle needs height and angle\n";
                 return;
             }
             int height = std::stoi(args[3]);
-            board.addShape(std::make_unique<Triangle>(nextId, x, y, color, filled, height));
-            std::cout << nextId << " triangle " << args[1] << " " << height << "\n";
+            int angle = std::stoi(args[4]);
+            board.addShape(std::make_unique<Triangle>(nextId, x, y, color, filled, height, angle));
+            std::cout << nextId << " triangle " << args[1] << " " << height << " " << angle << "\n";
             nextId++;
         }
         else if (type == "line") {
@@ -97,7 +98,7 @@ int main() {
     int nextId = 1;
 	board.addShape(std::make_unique<Rectangle>(1, 5, 3, 'r', false, 10, 5)); //тимчасово для перевірки
 	board.addShape(std::make_unique<Circle>(2, 50, 12, 'a', true, 5));
-	board.addShape(std::make_unique<Triangle>(3, 30, 2, 'g', false, 8));
+    board.addShape(std::make_unique<Triangle>(3, 30, 2, 'g', false, 8, 30));
 	board.addShape(std::make_unique<Line>(4, 5, 20, 'y', true, 20, 'v'));
 
 
@@ -138,9 +139,73 @@ int main() {
         else if (command == "shapes") {
             std::cout << "circle radius\n";
             std::cout << "rectangle width height\n";
-            std::cout << "triangle height\n";
+            std::cout << "triangle height angle\n";
             std::cout << "line length direction\n";
         }
+
+        else if (command == "select") {
+            bool found = false;
+
+            if (args.size() == 1) {
+                int id = std::stoi(args[0]);
+                found = board.selectById(id);
+            }
+            else if (args.size() == 2) {
+                int x = std::stoi(args[0]);
+                int y = std::stoi(args[1]);
+                found = board.selectByCoordinate(x, y);
+            }
+            else {
+                std::cout << "error: select needs id or x y\n";
+            }
+
+            if (found) {
+                Shape* s = board.getSelectedShape();
+                std::cout << s->getType();
+                std::cout << " ";
+                std::cout << s->getParamsString();
+                std::cout << "\n";
+            }
+            else if (args.size() == 1 || args.size() == 2) {
+                std::cout << "shape was not found\n";
+            }
+        }
+        else if (command == "remove") {
+            if (board.removeSelected()) {
+                std::cout << "shape removed\n";
+            }
+            else {
+                std::cout << "error: no shape selected\n";
+            }
+        }
+
+        else if (command == "paint") {
+            Shape* s = board.getSelectedShape();
+            if (s == nullptr) {
+                std::cout << "error: no shape selected\n";
+            }
+            else if (args.size() != 1) {
+                std::cout << "error: paint needs a color\n";
+            }
+            else {
+                char newColor = args[0][0];
+                s->paint(newColor);
+                std::cout << "shape painted\n";
+            }
+        }
+
+        else if (command == "move") {
+            int newX = std::stoi(args[0]);
+            int newY = std::stoi(args[1]);
+
+            if (board.moveSelected(newX, newY)) {
+                std::cout << "shape moved\n";
+            }
+            else {
+                std::cout << "error: no shape selected\n";
+            }
+        }
+
 		else if (command == "exit") {
 			break;
 		}
@@ -152,3 +217,4 @@ int main() {
 
 	return 0;
 }
+

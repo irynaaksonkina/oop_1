@@ -12,6 +12,7 @@ private:
 	int height;
 
 	std::vector<std::unique_ptr<Shape>> shapes;
+	int selectedIndex = -1;
 
 public:
 	Board(int width, int height);
@@ -22,4 +23,11 @@ public:
 
 	const std::vector<std::unique_ptr<Shape>>& getShapes() const;
 
+	bool selectById(int id);
+	bool selectByCoordinate(int x, int y);
+	Shape* getSelectedShape() const;
+
+	bool removeSelected();
+
+	bool moveSelected(int newX, int newY);
 };
