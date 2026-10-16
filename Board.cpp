@@ -16,7 +16,13 @@ void Board::draw() const {
     std::vector<std::string> grid(height, std::string(width, ' '));
 
     for (const auto& shape : shapes) {
-        shape->draw(grid);
+        for (int row = 0; row < height; row++) {
+            for (int col = 0; col < width; col++) {
+                if (shape->containsPoint(col, row)) {
+                    grid[row][col] = shape->getColor();
+                }
+            }
+        }
     }
 
 
@@ -25,14 +31,18 @@ void Board::draw() const {
     }
 }
 
-void Board::addShape(std::unique_ptr<Shape> shape) {
+bool Board::addShape(std::unique_ptr<Shape> shape) {
+    if (!shape->fitsInBoard(width, height)) {
+        return false;
+    }
     shapes.push_back(std::move(shape));
+    return true;
 }
 
 const std::vector<std::unique_ptr<Shape>>& Board::getShapes() const {
     return shapes;
 }
-
+   
 bool Board::selectById(int id) {
     for (size_t i = 0; i < shapes.size(); i++) {
         if (shapes[i]->getId() == id) {
@@ -74,8 +84,16 @@ bool Board::moveSelected(int newX, int newY) {
     if (selectedIndex == -1) {
         return false;
     }
+    Shape* shape = shapes[selectedIndex].get();
+    int oldX = shape->getX();
+    int oldY = shape->getY();
+    shape->moveTo(newX, newY);
+    if (!shape->isInsideBoard(width, height)) {
+        shape->moveTo(oldX, oldY);
+        return false;
+    }
 
-    shapes[selectedIndex]->moveTo(newX, newY);
+
 
     std::unique_ptr<Shape> temp = std::move(shapes[selectedIndex]);
     shapes.erase(shapes.begin() + selectedIndex);

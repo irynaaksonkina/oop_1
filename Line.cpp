@@ -8,34 +8,6 @@ Line::Line(int id, int x, int y, char color, bool filled, int length, char direc
 }
 
 
-void Line::draw(std::vector<std::string>& grid) const {
-	int boardHeight = static_cast<int>(grid.size());
-	if (boardHeight == 0) {
-		return;
-	}
-	int boardWidth = static_cast<int>(grid[0].size());
-
-	for (int i = 0; i < length; i++) {
-		int drawX;
-		int drawY;
-
-		if (direction == 'h') {
-			drawX = x + i;
-			drawY = y;
-		}
-		else {
-			drawX = x;
-			drawY = y + i;
-		}
-
-
-		if (drawX < 0 || drawX >= boardWidth || drawY < 0 || drawY >= boardHeight) {
-			continue;
-		}
-
-		grid[drawY][drawX] = color;
-	}
-}
 
 bool Line::containsPoint(int px, int py) const {
 	if (direction == 'h') {
@@ -52,6 +24,19 @@ bool Line::fitsInBoard(int boardWidth, int boardHeight) const {
 	}
 	else {
 		return length <= boardHeight;
+	}
+}
+
+void Line::getBounds(int& left, int& top, int& right, int& bottom) const {
+	left = x;
+	top = y;
+	if (direction == 'h') {
+		right = x + length - 1;
+		bottom = y;
+	}
+	else {
+		right = x;
+		bottom = y + length - 1;
 	}
 }
 

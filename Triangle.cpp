@@ -7,37 +7,6 @@ Triangle::Triangle(int id, int x, int y, char color, bool filled, int height, in
 
 }
 
-void Triangle::draw(std::vector<std::string>& grid) const {
-	int boardHeight = static_cast<int>(grid.size());
-	if (boardHeight == 0) {
-		return;
-	}
-
-	int boardWidth = static_cast<int>(grid[0].size());
-	double angleInRadians = angle * 3.14159265 / 180.0;
-
-	for (int row = 0; row < height; row++) {
-		
-		double halfWidthDouble = row * std::tan(angleInRadians);
-		int halfWidth = static_cast<int>(std::round(halfWidthDouble));
-
-		for (int col = -halfWidth; col <= halfWidth; col++) {
-			int drawX = x + col;
-			int drawY = y + row;
-
-			if (drawX < 0 || drawX >= boardWidth || drawY < 0 || drawY >= boardHeight) {
-				continue;
-			}
-
-			bool isEdge = (col == -halfWidth || col == halfWidth || row == height - 1);
-
-			if (filled || isEdge) {
-				grid[drawY][drawX] = color;
-			}
-		}
-
-	}
-}
 
 bool Triangle::containsPoint(int px, int py) const {
 	int row = py - y;
@@ -72,6 +41,17 @@ bool Triangle::fitsInBoard(int boardWidth, int boardHeight) const {
 
 	return height <= boardHeight && requiredWidth <= boardWidth;
 
+}
+
+void Triangle::getBounds(int& left, int& top, int& right, int& bottom) const {
+	double angleInRadians = angle * 3.14159265 / 180.0;
+	double halfWidthDouble = (height - 1) * std::tan(angleInRadians);
+	int halfWidth = static_cast<int>(std::round(halfWidthDouble));
+
+	left = x - halfWidth;
+	top = y;
+	right = x + halfWidth;
+	bottom = y + height - 1;
 }
 
 std::string Triangle::getType() const {

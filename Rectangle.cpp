@@ -6,30 +6,6 @@ Rectangle::Rectangle(int id, int x, int y, char color, bool filled, int width, i
 
 }
 
-void Rectangle::draw(std::vector<std::string>& grid) const {
-	int boardHeight = static_cast<int>(grid.size());
-	if (boardHeight == 0) {
-		return;
-	}
-	int boardWidth = static_cast<int>(grid[0].size());
-
-	for (int row = 0; row < height; row++) {
-		for (int col = 0; col < width; col++) {
-			int drawX = x + col;
-			int drawY = y + row;
-
-			if (drawX < 0 || drawX >= boardWidth || drawY < 0 || drawY >= boardHeight) {
-				continue;
-			}
-
-			bool isBorder = (row == 0 || row == height - 1 || col == 0 || col == width - 1);
-
-			if (filled || isBorder) {
-				grid[drawY][drawX] = color;
-			}
-		}
-	}
-}
 
 bool Rectangle::containsPoint(int px, int py) const {
 	bool insideBounds = (px >= x && px < x + width && py >= y && py < y + height);
@@ -49,6 +25,13 @@ bool Rectangle::containsPoint(int px, int py) const {
 
 bool Rectangle::fitsInBoard(int boardWidth, int boardHeight) const {
 	return width <= boardWidth && height <= boardHeight;
+}
+
+void Rectangle::getBounds(int& left, int& top, int& right, int& bottom) const {
+	left = x;
+	top = y;
+	right = x + width - 1;
+	bottom = y + height - 1;
 }
 
 std::string Rectangle::getType() const {

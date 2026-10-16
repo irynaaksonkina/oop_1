@@ -33,3 +33,10 @@ void Shape::moveTo(int newX, int newY) {
 	x = newX;
 	y = newY;
 }
+
+bool Shape::isInsideBoard(int boardWidth, int boardHeight) const {
+	int left, top, right, bottom;
+	getBounds(left, top, right, bottom);
+	return left >= 0 && top >= 0 && right < boardWidth && bottom < boardHeight;
+}
+

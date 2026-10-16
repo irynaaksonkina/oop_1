@@ -23,7 +23,35 @@ std::vector<std::string> splitIntoWords(const std::string& line) {
     return words;
 }
 
-void handleAdd(Board& board, const std::vector<std::string>& args, int& nextId) {
+bool parseInt(const std::string& text, int& result) {
+    try {
+        size_t pos = 0;
+        int value = std::stoi(text, &pos);
+        if (pos != text.size()) 
+        {
+            return false;
+        }
+        result = value;
+        return true;
+    }
+
+    catch (const std::exception&) {
+        return false;
+    }
+}
+
+
+int nextId1(const Board& board) {
+    int maxId = 0;
+    for (const auto& shape : board.getShapes()) {
+        if (shape->getId() > maxId) {
+            maxId = shape->getId();
+        }
+    }
+    return maxId + 1;
+}
+
+void handleAdd(Board& board, const std::vector<std::string>& args) {
     if (args.size() < 3) {
         std::cout << "error: not enough arguments for add\n";
         return;
@@ -38,28 +66,32 @@ void handleAdd(Board& board, const std::vector<std::string>& args, int& nextId) 
     char color = args[1][0];
     std::string type = args[2];
 
-    int x = 0;
-    int y = 0;
+    int id = nextId1(board);
+    
 
     try {
+        std::unique_ptr<Shape> shape;
         if (type == "rectangle" && args.size() == 5) {
-            board.addShape(std::make_unique<Rectangle>(nextId, 0, 0, color, filled, std::stoi(args[3]), std::stoi(args[4])));
+            shape = std::make_unique<Rectangle>(id, 0, 0, color, filled, std::stoi(args[3]), std::stoi(args[4]));
         }
         else if (type == "circle" && args.size() == 4) {
-            board.addShape(std::make_unique<Circle>(nextId, 0, 0, color, filled, std::stoi(args[3])));
+            shape = std::make_unique<Circle>(id, 0, 0, color, filled, std::stoi(args[3]));
         }
         else if (type == "triangle" && args.size() == 5) {
-            board.addShape(std::make_unique<Triangle>(nextId, 0, 0, color, filled, std::stoi(args[3]), std::stoi(args[4])));
+            shape = std::make_unique<Triangle>(id, 0, 0, color, filled, std::stoi(args[3]), std::stoi(args[4]));
         }
         else if (type == "line" && args.size() == 5) {
-            board.addShape(std::make_unique<Line>(nextId, 0, 0, color, filled, std::stoi(args[3]), args[4][0]));
+            shape = std::make_unique<Line>(id, 0, 0, color, filled, std::stoi(args[3]), args[4][0]);
         }
         else {
             std::cout << "error: unknown shape type or wrong number of parameters\n";
             return;
         }
-        std::cout << nextId << " " << type << " added\n";
-        nextId++;
+        if (!board.addShape(std::move(shape))) {
+            std::cout << "error: shape does not fit in the board\n";
+            return;
+        }
+        std::cout << id << " " << type << " added\n";
     }
 
     catch (...) {
@@ -69,24 +101,24 @@ void handleAdd(Board& board, const std::vector<std::string>& args, int& nextId) 
 
 int main() {
 	Board board(80, 25);
-    int nextId = 1;
-	board.addShape(std::make_unique<Rectangle>(1, 5, 3, 'r', false, 10, 5)); //тимчасово для перевірки
-	board.addShape(std::make_unique<Circle>(2, 50, 12, 'a', true, 5));
+
+    board.addShape(std::make_unique<Rectangle>(1, 5, 3, 'r', false, 10, 5)); //тимчасово для перевірки
+    board.addShape(std::make_unique<Circle>(2, 50, 12, 'a', true, 5));
     board.addShape(std::make_unique<Triangle>(3, 30, 2, 'g', false, 8, 30));
-	board.addShape(std::make_unique<Line>(4, 5, 20, 'y', true, 20, 'v'));
+    board.addShape(std::make_unique<Line>(4, 5, 20, 'y', true, 20, 'v'));
 
 
 
 	std::string line;
-	while (true) {
-		std::cout << "> ";
+    while (true) {
+        std::cout << "> ";
 
-		if (!std::getline(std::cin, line)) {
-			break;
-		}
+        if (!std::getline(std::cin, line)) {
+            break;
+        }
         std::vector<std::string> words = splitIntoWords(line);
         if (words.empty()) {
-            continue; 
+            continue;
         }
 
 
@@ -94,13 +126,13 @@ int main() {
         std::vector<std::string> args(words.begin() + 1, words.end());
 
 
-        
 
-		if (command == "draw") {
-			board.draw();
-		}
+
+        if (command == "draw") {
+            board.draw();
+        }
         else if (command == "add") {
-            handleAdd(board, args, nextId);
+            handleAdd(board, args);
         }
         else if (command == "list") {
             for (const auto& shape : board.getShapes()) {
@@ -120,13 +152,21 @@ int main() {
         else if (command == "select") {
             bool found = false;
 
+
             if (args.size() == 1) {
-                int id = std::stoi(args[0]);
+                int id;
+                if (!parseInt(args[0], id)) {
+                    std::cout << "error: id must be a number\n";
+                    continue;
+                }
                 found = board.selectById(id);
             }
             else if (args.size() == 2) {
-                int x = std::stoi(args[0]);
-                int y = std::stoi(args[1]);
+                int x, y;
+                if (!parseInt(args[0], x) || !parseInt(args[1], y)) {
+                    std::cout << "error: coordinates must be numbers\n";
+                    continue;
+                }
                 found = board.selectByCoordinate(x, y);
             }
             else {
@@ -169,14 +209,18 @@ int main() {
         }
 
         else if (command == "move") {
-            int newX = std::stoi(args[0]);
-            int newY = std::stoi(args[1]);
-
-            if (board.moveSelected(newX, newY)) {
+            int newX, newY;
+            if (args.size() != 2 || !parseInt(args[0], newX) || !parseInt(args[1], newY)) {
+                std::cout << "error: move needs two numbers: x y\n";
+            } 
+            else if (board.getSelectedShape() == nullptr) {
+                std::cout << "error: no shape selected\n";
+            }
+            else if (board.moveSelected(newX, newY)) {
                 std::cout << "shape moved\n";
             }
             else {
-                std::cout << "error: no shape selected\n";
+                std::cout << "error: new position is outside the board\n";
             }
         }
 
@@ -201,15 +245,14 @@ int main() {
             if (args.empty()) {
                 std::cout << "error: load needs a filename\n";
             }
-            else {
-                if (board.load(args[0])) {
-                    std::cout << "board loaded\n";
-                }
-                else {
-                    std::cout << "error: could not load file\n";
-                }
+            else if (board.load(args[0])) {
+                std::cout << "board loaded\n";
             }
-        }
+            else {
+                std::cout << "error: could not load file\n";
+            }
+ 
+       }
 
         else if (command == "edit") {
             if (!board.getSelectedShape()) {

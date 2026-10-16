@@ -1,0 +1,5 @@
+80 25
+rectangle frame b 0 0 10 5
+triangle frame y -30 -30 6 45
+triangle frame r 10 10 8 30
+triangle fill y 15 15 6 45

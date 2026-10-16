@@ -1,0 +1,7 @@
+80 25
+triangle frame g 30 2 8 30
+line fill y 5 20 20 v
+circle fill a -5 0 5
+rectangle frame r 10 10 10 5
+rectangle fill r 0 0 10 5
+circle fill y 0 0 5
